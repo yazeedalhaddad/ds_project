@@ -1,0 +1,8 @@
+{
+  "model_type": "catboost",
+  "cv_mae_rate_sec_per_min_mean": 3.675039108351305,
+  "cv_mae_rate_sec_per_min_std": 0.01163230407493396,
+  "cv_r2_mean": 0.8353919749854903,
+  "cv_r2_std": 0.0007760512969872664,
+  "n_segments": 220000
+}
