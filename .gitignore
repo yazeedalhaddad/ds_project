@@ -1,0 +1,77 @@
+# ----------------------------
+# 🚫 Ignore data files but keep folder structure
+# ----------------------------
+
+# Ignore all files in data/ recursively
+data/**
+
+# Keep the directory structure (empty .gitkeep files)
+!data/
+!data/**/
+!data/**/*.gitkeep
+
+# Optionally keep metadata files (e.g., README)
+!data/**/README.md
+
+
+# ----------------------------
+# 🧹 Python and environment files
+# ----------------------------
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.egg-info/
+*.egg
+.env
+.venv
+env/
+venv/
+.mypy_cache/
+.pytest_cache/
+.ipynb_checkpoints/
+.DS_Store
+
+
+# ----------------------------
+# 🧰 IDE and editor files
+# ----------------------------
+.vscode/
+.idea/
+
+
+# ----------------------------
+# 🧪 Jupyter and experiment logs
+# ----------------------------
+*.log
+*.out
+*.err
+mlruns/
+wandb/
+
+
+# ----------------------------
+# 🗄️ Temporary or large files
+# ----------------------------
+*.parquet
+*.zip
+*.7z
+*.gz
+*.bz2
+*.xz
+*.tar
+*.tar.gz
+*.pb
+*.db
+*.sqlite
+*.feather
+*.h5
+*.joblib
+data/prpocessed/*.csv
+
+
+# ----------------------------
+# 🧾 Generated outputs
+# ----------------------------
+outputs/
+
