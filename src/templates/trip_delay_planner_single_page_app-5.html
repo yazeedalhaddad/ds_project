@@ -1,266 +1,560 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>TripDelay Planner</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
-  <style>
-    :root{--bg:#0b1020;--card:#121831;--muted:#94a3b8;--text:#e6ecff;--accent:#6aa9ff;--accent2:#22d3ee;--warn:#f59e0b;--danger:#ef4444;}
-    html,body{height:100%;}
-    body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial; background:linear-gradient(180deg,#0b1020 0%,#0f1834 100%); color:var(--text);}
-    a{color:var(--accent)}
-    .container{max-width:1200px;margin:0 auto;padding:24px;}
-    .nav{display:flex;gap:16px;align-items:center;justify-content:space-between;margin-bottom:16px}
-    .nav a{padding:10px 14px;border-radius:10px;text-decoration:none;background:rgba(255,255,255,0.06)}
-    .brand{display:flex;align-items:center;gap:12px}
-    .logo{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,var(--accent),var(--accent2));box-shadow:0 0 24px rgba(34,211,238,.35)}
-    .grid{display:grid;grid-template-columns:320px 1fr;gap:18px}
-    @media (max-width: 900px){.grid{grid-template-columns:1fr;}}
-    .card{background:var(--card);border:1px solid rgba(255,255,255,0.08);border-radius:16px;box-shadow:0 6px 30px rgba(0,0,0,.25);}
-    .card h2{margin:0 0 10px 0}
-    .pad{padding:18px}
-    .muted{color:var(--muted)}
-    .btn{display:inline-flex;width:100%;box-sizing:border-box;justify-content:center;gap:8px;align-items:center;padding:12px 16px;border-radius:12px;background:linear-gradient(135deg,var(--accent),var(--accent2));border:none;font-weight:700;color:#05101a;cursor:pointer}
-    .btn:disabled{opacity:.6;cursor:not-allowed}
-    label{display:block;margin:10px 0 6px 0;font-weight:600}
-    input,select{width:100%;padding:12px;border-radius:12px;border:1px solid rgba(255,255,255,.1);background:#0e1430;color:var(--text);box-sizing:border-box;}
-    .row{display:flex;gap:10px;align-items:center;justify-content:space-between}
-    .pill{display:inline-flex;align-items:center;gap:8px;padding:8px 10px;border-radius:9999px;background:rgba(255,255,255,0.06);}
-    .footer{margin-top:16px;color:var(--muted);font-size:12px}
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>TripDelay Planner</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+      crossorigin=""
+    />
+    <style>
+      :root {
+        --bg: #0b1020;
+        --card: #121831;
+        --muted: #94a3b8;
+        --text: #e6ecff;
+        --accent: #6aa9ff;
+        --accent2: #22d3ee;
+        --warn: #f59e0b;
+        --danger: #ef4444;
+      }
+      html,
+      body {
+        height: 100%;
+      }
+      body {
+        margin: 0;
+        font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto,
+          Helvetica, Arial;
+        background: linear-gradient(180deg, #0b1020 0%, #0f1834 100%);
+        color: var(--text);
+      }
+      a {
+        color: var(--accent);
+      }
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 24px;
+      }
+      .nav {
+        display: flex;
+        gap: 16px;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 16px;
+      }
+      .nav a {
+        padding: 10px 14px;
+        border-radius: 10px;
+        text-decoration: none;
+        background: rgba(255, 255, 255, 0.06);
+      }
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .logo {
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
+        background: linear-gradient(135deg, var(--accent), var(--accent2));
+        box-shadow: 0 0 24px rgba(34, 211, 238, 0.35);
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: 320px 1fr;
+        gap: 18px;
+      }
+      @media (max-width: 900px) {
+        .grid {
+          grid-template-columns: 1fr;
+        }
+      }
+      .card {
+        background: var(--card);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 16px;
+        box-shadow: 0 6px 30px rgba(0, 0, 0, 0.25);
+      }
+      .card h2 {
+        margin: 0 0 10px 0;
+      }
+      .pad {
+        padding: 18px;
+      }
+      .muted {
+        color: var(--muted);
+      }
+      .btn {
+        display: inline-flex;
+        width: 100%;
+        box-sizing: border-box;
+        justify-content: center;
+        gap: 8px;
+        align-items: center;
+        padding: 12px 16px;
+        border-radius: 12px;
+        background: linear-gradient(135deg, var(--accent), var(--accent2));
+        border: none;
+        font-weight: 700;
+        color: #05101a;
+        cursor: pointer;
+      }
+      .btn:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
+      label {
+        display: block;
+        margin: 10px 0 6px 0;
+        font-weight: 600;
+      }
+      input,
+      select {
+        width: 100%;
+        padding: 12px;
+        border-radius: 12px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        background: #0e1430;
+        color: var(--text);
+        box-sizing: border-box;
+      }
+      .row {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 10px;
+        border-radius: 9999px;
+        background: rgba(255, 255, 255, 0.06);
+      }
+      .footer {
+        margin-top: 16px;
+        color: var(--muted);
+        font-size: 12px;
+      }
 
-    section{display:none}
-    section.active{display:block}
-    .hero{display:grid;grid-template-columns:1.2fr .8fr;gap:24px;align-items:center}
-    @media (max-width: 900px){.hero{grid-template-columns:1fr}}
-    .big{font-size:44px;line-height:1.1;margin:0 0 10px 0}
-    .sub{font-size:18px;color:var(--muted);}
-    .stack{display:flex;gap:12px;flex-wrap:wrap;margin-top:18px}
+      section {
+        display: none;
+      }
+      section.active {
+        display: block;
+      }
+      .hero {
+        display: grid;
+        grid-template-columns: 1.2fr 0.8fr;
+        gap: 24px;
+        align-items: center;
+      }
+      @media (max-width: 900px) {
+        .hero {
+          grid-template-columns: 1fr;
+        }
+      }
+      .big {
+        font-size: 44px;
+        line-height: 1.1;
+        margin: 0 0 10px 0;
+      }
+      .sub {
+        font-size: 18px;
+        color: var(--muted);
+      }
+      .stack {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-top: 18px;
+      }
 
-    #map{width:100%;height:100%;min-height:500px;border-radius:16px}
+      #map {
+        width: 100%;
+        height: 100%;
+        min-height: 500px;
+        border-radius: 16px;
+      }
 
-    .result{display:flex;align-items:center;gap:14px;padding:12px;border-radius:12px;background:rgba(255,255,255,.06);}
-    .badge{font-weight:700;padding:6px 10px;border-radius:9999px}
-    .weather-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
-  </style>
-</head>
-<body>
-  <div class="container">
-    <div class="nav">
-      <div class="brand"><div class="logo"></div><strong>TripDelay AI</strong></div>
-      <nav class="stack">
-        <a href="#home">Home</a>
-        <a href="#tool">Plan</a>
-        <a href="#how">How It Works</a>
-      </nav>
-    </div>
+      .result {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding: 12px;
+        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.06);
+      }
+      .badge {
+        font-weight: 700;
+        padding: 6px 10px;
+        border-radius: 9999px;
+      }
+      .weather-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="nav">
+        <div class="brand">
+          <div class="logo">
+            <img
+              src="../images/logo-AI.png"
+              style="width: 45px; height: 45px; border-radius: 10px"
+            />
+          </div>
+          <strong
+            style="
+              position: relative;
+              margin-top: 3px;
+              margin-left: 2px;
+              font-size: larger;
+            "
+            >TripDelay AI</strong
+          >
+        </div>
+        <nav class="stack">
+          <a href="#home" style="color: #e6ecff">Home</a>
+          <a href="#tool" style="color: #e6ecff">Plan</a>
+          <a href="#how" style="color: #e6ecff">How It Works</a>
+        </nav>
+      </div>
 
-    <section id="home" class="active">
-      <div class="hero card pad">
-        <div>
-          <h1 class="big">AI-Powered Bus Delay Predictions</h1>
-          <p class="sub">Harnessing real-time weather and historical data, our AI model predicts bus delays to help you plan your journey more accurately. Avoid surprises and travel smarter.</p>
-          <div class="stack">
-            <a class="btn" href="#tool">▶️ Plan Your Trip</a>
-            <span class="pill muted">Flask • Pandas • CatBoost</span>
+      <section id="home" class="active">
+        <div
+          class="hero card pad"
+          style="position: relative; margin-top: 200px"
+        >
+          <div>
+            <h1 class="big">AI-Powered Bus Delay Predictions</h1>
+            <p class="sub">
+              Harnessing real-time weather and historical data, our AI model
+              predicts bus delays to help you plan your journey more accurately.
+              Avoid surprises and travel smarter.
+            </p>
+            <div class="stack">
+              <a class="btn" href="#tool" style="text-decoration: none"
+                >▶️ Plan Your Trip</a
+              >
+              <!-- <span class="pill muted">Flask • Pandas • CatBoost</span> -->
+            </div>
+          </div>
+          <div class="card pad">
+            <h2>What this project does</h2>
+            <p class="muted">
+              This tool uses a machine learning model trained on thousands of
+              simulated bus trips. It understands the relationship between
+              weather, time of day, and bus routes to provide a delay estimate
+              in seconds.
+            </p>
+            <ul>
+              <li>AI Model trained on simulated data</li>
+              <li>️ User-input weather conditions</li>
+              <li>Route and Stop data from GTFS files</li>
+              <li>Python backend with Flask</li>
+            </ul>
           </div>
         </div>
-        <div class="card pad">
-          <h2>What this project does</h2>
-          <p class="muted">This tool uses a machine learning model trained on thousands of simulated bus trips. It understands the relationship between weather, time of day, and bus routes to provide a delay estimate in seconds.</p>
-          <ul>
-            <li> AI Model trained on simulated data</li>
-            <li>️ User-input weather conditions</li>
-            <li> Route and Stop data from GTFS files</li>
-            <li> Python backend with Flask</li>
-          </ul>
+      </section>
+
+      <section id="tool">
+        <div class="grid">
+          <aside class="card pad">
+            <form id="planner-form">
+              <h2>Trip Details</h2>
+              <label for="route">Route</label>
+              <select id="route" name="route" required>
+                <option disabled selected value="">Select a route</option>
+                {% for r in routes %}
+                <option value="{{r}}">{{r}}</option>
+                {% endfor %}
+              </select>
+
+              <label for="routetype"> Route Type </label>
+              <select id="routetype" name="routetype" required>
+                <option disabled selected value="">Select a mode</option>
+                <option value="100">100 - Railway Service</option>
+                <option value="101">
+                  101 - High Speed Rail Service (e.g. X2000)
+                </option>
+                <option value="102">
+                  102 - Long Distance Rail Service (e.g. Mälartåg)
+                </option>
+                <option value="105">
+                  105 - Sleeper Rail Service (Night train / Nattåg)
+                </option>
+                <option value="106">
+                  106 - Regional Rail Service (Commuter trains / Pendeltåg)
+                </option>
+                <option value="401">401 - Metro Service (Tunnelbanan)</option>
+                <option value="700">700 - Bus Service</option>
+                <option value="900">900 - Tram Service</option>
+                <option value="1000">1000 - Water Transport Service</option>
+                <option value="1501">1501 - Communal Taxi Service</option>
+              </select>
+              <label for="start-stop">Start Stop</label>
+              <select id="start-stop" name="start_stop" required>
+                <option disabled selected value="">
+                  Select a starting stop
+                </option>
+                {% for s in stops %}
+                <option value="{{s}}">{{s}}</option>
+                {% endfor %}
+              </select>
+
+              <label for="dest-stop">Destination Stop</label>
+              <select id="dest-stop" name="dest_stop" required>
+                <option disabled selected value="">Select a destination</option>
+                {% for s in stops %}
+                <option value="{{s}}">{{s}}</option>
+                {% endfor %}
+              </select>
+
+              <h2 style="margin-top: 24px">Time & Weather</h2>
+              <label for="departure-time">Departure Time</label>
+              <input
+                type="datetime-local"
+                id="departure-time"
+                name="departure_time"
+                required
+              />
+
+              <div class="weather-grid">
+                <div class="form-group">
+                  <label for="snow-depth">Snow Depth(cm)</label>
+                  <input
+                    type="number"
+                    id="depth_cm"
+                    name="depth_cm"
+                    value="0"
+                    step="0.1"
+                  />
+                </div>
+                <div class="form-group">
+                  <label
+                    for="temp-c"
+                    style="position: relative; margin-bottom: 25px"
+                    >Temp (°C)</label
+                  >
+                  <input
+                    type="number"
+                    id="temp-c"
+                    name="temp_c"
+                    value="10"
+                    step="0.1"
+                  />
+                </div>
+                <div class="form-group">
+                  <label
+                    for="wind-ms"
+                    style="position: relative; margin-bottom: 25px"
+                    >Wind (m/s)</label
+                  >
+                  <input
+                    type="number"
+                    id="wind-ms"
+                    name="wind_ms"
+                    value="5"
+                    step="0.1"
+                  />
+                </div>
+                <div class="form-group">
+                  <label for="percipitation-mm">Percipitation(mm/h)</label>
+                  <input
+                    type="number"
+                    id="percipitation-mm"
+                    name="percipitation-mm"
+                    value="1"
+                    step="0.1"
+                  />
+                </div>
+              </div>
+              <div style="height: 12px"></div>
+              <button class="btn" id="planBtn">Predict Delay</button>
+              <div style="height: 12px"></div>
+            </form>
+
+            <div class="result" id="resultBox" style="display: none">
+              <div
+                id="delayBadge"
+                class="badge"
+                style="background: rgba(255, 255, 255, 0.1)"
+              >
+                --
+              </div>
+              <div>
+                <div>
+                  <strong>Predicted Delay: </strong
+                  ><span id="delayText">--</span>
+                </div>
+                <div class="muted" id="status"></div>
+              </div>
+            </div>
+          </aside>
+          <main class="card">
+            <div id="map"></div>
+          </main>
         </div>
-      </div>
-    </section>
+      </section>
+      <section id="home" class="active">...</section>
 
-    <section id="tool">
-      <div class="grid">
-        <aside class="card pad">
-          <form id="planner-form">
-            <h2>Trip Details</h2>
-            <label for="route">Route</label>
-            <select id="route" name="route" required>
-              <option disabled selected value="">Select a route</option>
-              {% for r in routes %} <option value="{{r}}">{{r}}</option> {% endfor %}
-            </select>
+      <section id="footer">- -</section>
 
-            <label for="start-stop">Start Stop</label>
-            <select id="start-stop" name="start_stop" required>
-              <option disabled selected value="">Select a starting stop</option>
-              {% for s in stops %} <option value="{{s}}">{{s}}</option> {% endfor %}
-            </select>
-
-            <label for="dest-stop">Destination Stop</label>
-            <select id="dest-stop" name="dest_stop" required>
-              <option disabled selected value="">Select a destination</option>
-              {% for s in stops %} <option value="{{s}}">{{s}}</option> {% endfor %}
-            </select>
-
-            <h2 style="margin-top:24px;">Time & Weather</h2>
-            <label for="departure-time">Departure Time</label>
-            <input type="datetime-local" id="departure-time" name="departure_time" required>
-
-            <div class="weather-grid">
-                <div class="form-group">
-                    <label for="weather-state">Condition</label>
-                    <select id="weather-state" name="weather_state">
-                        <option value="clear">Clear</option>
-                        <option value="rain">Rain</option>
-                        <option value="snow">Snow</option>
-                        <option value="clouds">Clouds</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="temp-c">Temp (°C)</label>
-                    <input type="number" id="temp-c" name="temp_c" value="10" step="0.1">
-                </div>
-                <div class="form-group">
-                    <label for="wind-ms">Wind (m/s)</label>
-                    <input type="number" id="wind-ms" name="wind_ms" value="5" step="0.1">
-                </div>
-                <div class="form-group">
-                    <label for="visibility-km">Visibility (km)</label>
-                    <input type="number" id="visibility-km" name="visibility_km" value="10" step="0.1">
-                </div>
-            </div>
-            <div style="height:12px"></div>
-            <button class="btn" id="planBtn">Predict Delay</button>
-            <div style="height:12px"></div>
-          </form>
-
-          <div class="result" id="resultBox" style="display:none">
-            <div id="delayBadge" class="badge" style="background:rgba(255,255,255,.1)">--</div>
-            <div>
-              <div><strong>Predicted Delay: </strong><span id="delayText">--</span></div>
-              <div class="muted" id="status"></div>
-            </div>
-          </div>
-        </aside>
-        <main class="card">
-          <div id="map"></div>
-        </main>
-      </div>
-    </section>
-
-    <section id="how">
+      <footer class="footer">
+        Project by :- Ayesh Malindu, Avishka Lakshan , Yazeed Alhaddad
+      </footer>
+      <section id="how">
         <div class="card pad">
           <h2>How It Works</h2>
           <ol>
-            <li><strong>Input</strong>: You select a bus route, start stop, destination, and departure time.</li>
-            <li><strong>Weather Data</strong>: You provide the expected weather conditions for the trip (e.g., temperature, wind, rain/snow).</li>
-            <li><strong>AI Model</strong>: The browser sends this information to our Python Flask server, which passes it to the pre-trained CatBoost model.</li>
-            <li><strong>Delay Estimate</strong>: The model returns a predicted delay in seconds. Positive values mean the bus is late; negative values mean it's early. This is displayed in the result box.</li>
+            <li>
+              <strong>Input</strong>: You select a bus route, start stop,
+              destination, and departure time.
+            </li>
+            <li>
+              <strong>Weather Data</strong>: You provide the expected weather
+              conditions for the trip (e.g., temperature, wind, rain/snow).
+            </li>
+            <li>
+              <strong>AI Model</strong>: The browser sends this information to
+              our Python Flask server, which passes it to the pre-trained
+              CatBoost model.
+            </li>
+            <li>
+              <strong>Delay Estimate</strong>: The model returns a predicted
+              delay in seconds. Positive values mean the bus is late; negative
+              values mean it's early. This is displayed in the result box.
+            </li>
           </ol>
         </div>
       </section>
-  </div>
+    </div>
 
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
-  <script>
-    // ================== CONFIG ==================
-    const AI_MODEL_ENDPOINT = "/predict";
+    <script>
+      // ================== CONFIG ==================
+      const AI_MODEL_ENDPOINT = "/predict";
 
-    // ================== MAP ==================
-    const map = L.map('map', { zoomControl: true, scrollWheelZoom: true }).setView([60.1699, 24.9384], 13); // Centered on Helsinki
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
-      maxZoom: 19
-    }).addTo(map);
+      // ================== MAP ==================
+      const map = L.map("map", {
+        zoomControl: true,
+        scrollWheelZoom: true,
+      }).setView([60.1699, 24.9384], 13); // Centered on Helsinki
+      L.tileLayer(
+        "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",
+        {
+          attribution:
+            '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+          maxZoom: 19,
+        }
+      ).addTo(map);
 
-    // ================== DOM ELEMENTS ==================
-    const form = document.getElementById('planner-form');
-    const planBtn = document.getElementById('planBtn');
-    const resultBox = document.getElementById('resultBox');
-    const delayBadge = document.getElementById('delayBadge');
-    const delayText = document.getElementById('delayText');
-    const statusEl = document.getElementById('status');
+      // ================== DOM ELEMENTS ==================
+      const form = document.getElementById("planner-form");
+      const planBtn = document.getElementById("planBtn");
+      const resultBox = document.getElementById("resultBox");
+      const delayBadge = document.getElementById("delayBadge");
+      const delayText = document.getElementById("delayText");
+      const statusEl = document.getElementById("status");
 
-    // ================== FLOW ==================
-    async function handlePlan(event) {
+      // ================== FLOW ==================
+      async function handlePlan(event) {
         event.preventDefault();
         planBtn.disabled = true;
-        planBtn.textContent = 'Predicting...';
-        statusEl.textContent = 'Sending data to the AI model...';
-        resultBox.style.display = 'none';
+        planBtn.textContent = "Predicting...";
+        statusEl.textContent = "Sending data to the AI model...";
+        resultBox.style.display = "none";
 
         const formData = new FormData(form);
         const data = Object.fromEntries(formData.entries());
 
         try {
-            const response = await fetch(AI_MODEL_ENDPOINT, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data)
-            });
+          const response = await fetch(AI_MODEL_ENDPOINT, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(data),
+          });
 
-            if (!response.ok) {
-                const err = await response.json();
-                throw new Error(err.error || 'Prediction request failed');
-            }
+          if (!response.ok) {
+            const err = await response.json();
+            throw new Error(err.error || "Prediction request failed");
+          }
 
-            const result = await response.json();
-            showResult(result.predicted_delay_seconds);
-
+          const result = await response.json();
+          showResult(result.predicted_delay_seconds);
         } catch (error) {
-            console.error(error);
-            statusEl.textContent = `Error: ${error.message}`;
-            resultBox.style.display = 'flex';
-            delayBadge.textContent = 'ERR';
-            delayBadge.style.background = '#ef444433';
-            delayText.textContent = '--';
+          console.error(error);
+          statusEl.textContent = `Error: ${error.message}`;
+          resultBox.style.display = "flex";
+          delayBadge.textContent = "ERR";
+          delayBadge.style.background = "#ef444433";
+          delayText.textContent = "--";
         } finally {
-            planBtn.disabled = false;
-            planBtn.textContent = 'Predict Delay';
+          planBtn.disabled = false;
+          planBtn.textContent = "Predict Delay";
         }
-    }
+      }
 
-    function showResult(delaySeconds) {
+      function showResult(delaySeconds) {
         const delayMinutes = (delaySeconds / 60).toFixed(1);
-        resultBox.style.display = 'flex';
+        resultBox.style.display = "flex";
         delayText.textContent = `${delayMinutes} min`;
         statusEl.textContent = `Prediction complete.`;
 
         if (delaySeconds <= 30) {
-            delayBadge.textContent = 'LOW';
-            delayBadge.style.background = '#10b98133';
+          delayBadge.textContent = "LOW";
+          delayBadge.style.background = "#10b98133";
         } else if (delaySeconds <= 180) {
-            delayBadge.textContent = 'MED';
-            delayBadge.style.background = '#f59e0b33';
+          delayBadge.textContent = "MED";
+          delayBadge.style.background = "#f59e0b33";
         } else {
-            delayBadge.textContent = 'HIGH';
-            delayBadge.style.background = '#ef444433';
+          delayBadge.textContent = "HIGH";
+          delayBadge.style.background = "#ef444433";
         }
-    }
-
-    // ================== NAV (hash router) ==================
-    function renderRoute() {
-      const hash = location.hash || '#home';
-      document.querySelectorAll('section').forEach(s => s.classList.remove('active'));
-      const el = document.querySelector(hash);
-      const activeEl = (el ? el : document.querySelector('#home'));
-      activeEl.classList.add('active');
-      if (activeEl.id === 'tool') {
-        setTimeout(() => map.invalidateSize(), 100);
       }
-    }
-    window.addEventListener('hashchange', renderRoute);
 
-    // ================== INIT ==================
-    form.addEventListener('submit', handlePlan);
+      // ================== NAV (hash router) ==================
+      function renderRoute() {
+        const hash = location.hash || "#home";
+        document
+          .querySelectorAll("section")
+          .forEach((s) => s.classList.remove("active"));
+        const el = document.querySelector(hash);
+        const activeEl = el ? el : document.querySelector("#home");
+        activeEl.classList.add("active");
+        if (activeEl.id === "tool") {
+          setTimeout(() => map.invalidateSize(), 100);
+        }
+      }
+      window.addEventListener("hashchange", renderRoute);
 
-    // Set default departure time to now
-    document.getElementById('departure-time').value = new Date().toISOString().slice(0, 16);
+      // ================== INIT ==================
+      form.addEventListener("submit", handlePlan);
 
-    renderRoute();
-  </script>
-</body>
+      // Set default departure time to now
+      document.getElementById("departure-time").value = new Date()
+        .toISOString()
+        .slice(0, 16);
+
+      renderRoute();
+    </script>
+  </body>
 </html>
